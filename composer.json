@@ -1,0 +1,13 @@
+{
+    "name": "andruida/food-catalogue",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Andruida",
+            "email": "borus.benedek@gmail.com"
+        }
+    ],
+    "require": {
+        "gabordemooij/redbean": "dev-master"
+    }
+}
