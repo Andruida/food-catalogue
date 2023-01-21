@@ -21,7 +21,24 @@ if ($USER == NULL || $DEPLOYMENT == NULL) {
     die();
 }
 
-$foods = R::find('food', 'deployment_id = ?', [$DEPLOYMENT->id]);
+$dish_fields = [
+    "storedSoups"       => "soup", 
+    "storedMainCourses" => "mainCourse", 
+    "storedSideDishes"  => "sideDish", 
+    "storedDesserts"    => "dessert"
+];
+
+if (empty($_GET["field"]) || !isset($dish_fields[$_GET["field"]])) {
+    http_response_code(400);
+    die();
+}
+
+$foods = R::find('food', 'deployment_id = ? AND type_id = ?', 
+    [
+        $DEPLOYMENT->id, 
+        R::enum("foodtype:".$dish_fields[$_GET["field"]])->id
+    ]
+);
 
 foreach ($foods as $food) { ?>
     <option><?= htmlspecialchars($food->name) ?></option>

@@ -1,9 +1,9 @@
 function submit() {
     $("#loadingSpinner").show()
-    $("#nameEmptyError").hide()
-    $("#nameNotFoundError").hide()
+    $("#emptyAlert").hide()
     $("#successAlert").hide()
     $("#failAlert").hide()
+    $("#notFoundAlert").hide()
     $("#submitBtn").prop("disabled", true)
 
     $(".foodInput").removeClass("is-invalid").removeClass("is-valid")
@@ -14,13 +14,35 @@ function submit() {
         if ($(this).val().length == 0) {
             $(this).addClass("is-invalid")
             allValid = false;
-            if ($(this).prop("id") == "foodName") {
-                $("#nameEmptyError").show()
-            }
+        }
+    })
+    const foodEntryMode = $("input[name='foodEntryMode'][type='radio']:checked").val();
+
+    if (foodEntryMode != 'noLog') {
+        if ($("#foodDate").val().length == 0) {
+            $("#foodDate").addClass("is-invalid")
+            allValid = false;
+        }
+    }
+
+    $(".foodInput[type='text']").each(function() {
+        if ($(this).val().length > 100) {
+            $(this).addClass("is-invalid")
+            allValid = false;
         }
     })
 
-    if (allValid == false) {
+    const emptyCourses = 
+    ["#soupName", "#mainCourseName", "#sideDishName", "#dessertName"].every(function(selector) {
+        return $(selector).val().length == 0;
+    });
+
+    if (emptyCourses === true) {
+        $("#emptyAlert").show()
+        allValid = false;
+    }
+
+    if (allValid === false) {
         $("#loadingSpinner").hide()
         $("#submitBtn").prop("disabled", false)
         return;
@@ -30,23 +52,24 @@ function submit() {
         url: "/api/log.php",
         method: "POST",
         data: {
-            name: $("#foodName").val(),
+            soup: $("#soupName").val(),
+            mainCourse: $("#mainCourseName").val(),
+            sideDish: $("#sideDishName").val(),
+            dessert: $("#dessertName").val(),
             date: $("#foodDate").val(),
-            createIfNeeded: $("#foodCreateIfNeeded").prop('checked')
+            foodEntryMode: foodEntryMode || "createIfNeeded"
         },
         success: function(response) {
             $("#loadingSpinner").hide()
             $("#submitBtn").prop("disabled", false)
             if (response == "NOTFOUND") {
-                $("#foodName").addClass("is-invalid")
-                $("#nameEmptyError").hide()
-                $("#nameNotFoundError").show()
+                $("#NotFoundAlert").show()
                 return
             }
             loadTable("#logTable")
             loadStoredFoods()
             $("#successAlert").show()
-            $("#foodName").val("")
+            $(".dishInput").val("")
         },
         error: function(jqXHR, textStatus, errorThrown) {
             $("#loadingSpinner").hide()
@@ -62,13 +85,39 @@ function submit() {
 
 
 function loadStoredFoods() {
-    $.ajax({
-        url: "/api/log-food-options.php",
-        success: function(response) {
-            $("#storedFoods").html(response)
-        }
-    })
+    $(".dishInput")
+        .toArray()
+        .map(function(v){return $(v).attr("list")})
+        .forEach(function(k) {
+            $.ajax({
+                url: "/api/log-food-options.php?field="+k,
+                success: function(response) {
+                    $("#"+k).html(response)
+                }
+            })
+        })
     
 }
 
 $(document).ready(loadStoredFoods)
+
+function checkFoodExists(selector) {
+    $(selector).removeClass("is-valid")
+    const matches = $("#"+ $(selector).attr("list") )
+        .children()
+        .toArray()
+        .map(function(v) {return $(v).text()})
+        .some(function(v){return v == $(selector).val()})
+
+
+    if (matches) {
+        $(selector).addClass("is-valid")
+    }
+}
+
+
+$(document).ready(function() {
+    $(".dishInput").each(function() {
+            $(this).bind("input", checkFoodExists.bind(this, this))
+        })
+})
