@@ -11,7 +11,7 @@ if (!empty($USER)) {
 }
 ?>
 <div class="container-fluid">
-    <h4>Bejelentkezés</h1>
+    <h4>Bejelentkezés</h4>
     <div class="form-floating mt-4 mb-3">
         <input type="text" class="form-control required userInput" id="username" placeholder="username" spellcheck="false">
         <label for="username">Felhasználónév</label>
@@ -28,7 +28,7 @@ if (!empty($USER)) {
     </div>
     <div class="row col-sm-4 mt-4 mx-auto">
         <button type="button" onclick="submit()" id="submitBtn" class="btn btn-primary">
-            Mentés
+            Bejelentkezés
         </button>
     </div>
     <div class="row" id="loadingSpinner" style="display: none;">

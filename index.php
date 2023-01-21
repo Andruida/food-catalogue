@@ -23,6 +23,17 @@ if (isset($_SESSION["user_id"]) && !empty($_SESSION["user_id"])) {
     }
 }
 
+$DEPLOYMENT = NULL;
+if (isset($_SESSION["deployment_id"]) && !empty($_SESSION["deployment_id"])) {
+    if ($USER->deployment_id !== $_SESSION["deployment_id"]) {
+        $_SESSION["deployment_id"] = $USER->deployment_id;
+    }
+    $DEPLOYMENT = R::findOne("deployment", 'id = ?', [$_SESSION["deployment_id"]]);
+    if ($DEPLOYMENT == NULL) {
+        session_destroy();
+    }
+}
+
 $queryMarker = strpos($_SERVER["REQUEST_URI"], "?");
 $URI = ($queryMarker) ? substr($_SERVER["REQUEST_URI"], 0, $queryMarker) : $_SERVER["REQUEST_URI"];
 if (strlen($URI) != 1 && strlen($URI) - 1 == strrpos($URI, "/")) {
@@ -30,17 +41,11 @@ if (strlen($URI) != 1 && strlen($URI) - 1 == strrpos($URI, "/")) {
 }
 
 
-// session_start([
-// 	'cookie_lifetime' => 86400,
-// 	'gc_maxlifetime' => 86400,
-// ]);
-
 $pageNames = [
-    "/add-food" => "Étel hozzáadása",
-    "/log" => "Napló"
 ];
 
 if (!empty($USER)) {
+    $pageNames["/log"] = "Napló";
     $pageNames["/logout"] = "Kijelentkezés";
 } else {
     $pageNames["/login"] = "Bejelentkezés";
@@ -50,6 +55,7 @@ $curpage = "picker";
 
 $map = [
     "/" => "picker",
+    "/log" => "log",
     "/add-food" => "add-food",
     "/login" => "login",
     "/logout" => "logout"
@@ -59,7 +65,9 @@ if (isset($map[$URI])) {
     $curpage = $map[$URI];
 }
 
-$required_page_file = $_SERVER["DOCUMENT_ROOT"] . "/pages/" . $curpage . ".php"
+$required_page_file = $_SERVER["DOCUMENT_ROOT"] . "/pages/" . $curpage . ".php";
+
+$SCRIPTS = [];
 
 ?>
 <!doctype html>
@@ -97,6 +105,10 @@ $required_page_file = $_SERVER["DOCUMENT_ROOT"] . "/pages/" . $curpage . ".php"
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/global.js"></script>
+    <?php foreach($SCRIPTS as $src) { ?> 
+    <script src="<?= $src ?>"></script>
+    <?php } ?>
 </body>
 
 </html>
