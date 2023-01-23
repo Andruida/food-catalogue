@@ -24,3 +24,19 @@ function loadTable(selector) {
         }
     })
 }
+
+function changeDeployment(id) {
+    $.ajax({
+        url: "/api/change-deployment.php",
+        method: "POST",
+        data: {
+            id
+        },
+        success: function (response) {
+            location.reload();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            location.reload();
+        }
+    })
+}

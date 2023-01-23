@@ -1,10 +1,17 @@
 <?php
+
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    http_response_code(405);
+    die();
+};
+
 require_once($_SERVER["DOCUMENT_ROOT"] . '/classloader.php');
 use \RedBeanPHP\R as R;
 
 $dbcreds = Config::getMySQLCredentials();
 R::setup($dbcreds["conn_str"], $dbcreds["username"], $dbcreds["password"]);
 unset($dbcreds);
+// R::debug();
 
 session_start();
 $USER = $DEPLOYMENT = NULL;
@@ -24,25 +31,22 @@ if ($USER == NULL || $DEPLOYMENT == NULL) {
     die();
 }
 
-$dish_fields = [
-    "storedSoups"       => "soup", 
-    "storedMainCourses" => "mainCourse", 
-    "storedSideDishes"  => "sideDish", 
-    "storedDesserts"    => "dessert"
-];
+// validation 
 
-if (empty($_GET["field"]) || !isset($dish_fields[$_GET["field"]])) {
+if (!isset($_POST["id"]) || empty($_POST["id"])) {
     http_response_code(400);
+    echo "id hiányzik!";
     die();
 }
 
-$foods = R::find('food', 'deployment_id = ? AND foodtype_id = ?', 
-    [
-        $DEPLOYMENT->id, 
-        R::enum("foodtype:".$dish_fields[$_GET["field"]])->id
-    ]
-);
+$d = R::findOne("deployment", "deployment.id = ? AND @shared.user.id = ?", [$_POST["id"], $USER->id]);
+if ($d == NULL) {
+    echo "NOTFOUND";
+    die();
+}
 
-foreach ($foods as $food) { ?>
-    <option><?= htmlspecialchars($food->name) ?></option>
-<?php } ?>
+$USER->last_deployment = $d;
+R::store($USER);
+$_SESSION["deployment_id"] = $d->id;
+
+?>

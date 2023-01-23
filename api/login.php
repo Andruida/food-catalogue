@@ -29,7 +29,7 @@ if ($user == NULL) {
 
 if (password_verify($_POST["password"], $user->password)) {
     $_SESSION["user_id"] = $user->id;
-    $_SESSION["deployment_id"] = $user->deployment_id;
+    $_SESSION["deployment_id"] = $user->last_deployment_id;
 } else {
     R::close();
     die("INVALID");

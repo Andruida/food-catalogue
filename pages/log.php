@@ -135,7 +135,7 @@ $SCRIPTS[] = "/js/log.js";
             </label>
         </div>
         <div class="form-check mb-4">
-            <input class="form-check-input foodInput" type="radio" disabled value="noLog" name="foodEntryMode" id="foodNoLog">
+            <input class="form-check-input foodInput" type="radio" value="noLog" name="foodEntryMode" id="foodNoLog">
             <label class="form-check-label" for="foodNoLog">
                 Új étel felvétele naplózás nélkül
             </label>

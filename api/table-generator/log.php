@@ -16,7 +16,10 @@ if (!isset($_SESSION["user_id"]) || empty($_SESSION["user_id"]) ||
         die();
 }
 $USER = R::findOne("user", 'id = ?', [$_SESSION["user_id"]]);
-$DEPLOYMENT = R::findOne("deployment", 'id = ?', [$_SESSION["deployment_id"]]);
+$DEPLOYMENT = R::findOne("deployment", 
+    'deployment.id = ? AND @shared.user.id = ?', 
+    [$_SESSION["deployment_id"], $_SESSION["user_id"]]
+);
 if ($USER == NULL || $DEPLOYMENT == NULL) {
     session_destroy();
     http_response_code(401);
