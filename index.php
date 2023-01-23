@@ -41,25 +41,26 @@ if (strlen($URI) != 1 && strlen($URI) - 1 == strrpos($URI, "/")) {
 }
 
 
-$pageNames = [
+$pageNames = [];
+
+$curpage = "login";
+
+$map = [
+    "/login" => "login",
+    "/logout" => "logout"
 ];
 
 if (!empty($USER)) {
     $pageNames["/log"] = "Napló";
     $pageNames["/logout"] = "Kijelentkezés";
+
+    $curpage = "picker";
+    $map["/"] = "picker";
+    $map["/log"] = "log";
+    $map["/add-food"] = "add-food";
 } else {
     $pageNames["/login"] = "Bejelentkezés";
 }
-
-$curpage = "picker";
-
-$map = [
-    "/" => "picker",
-    "/log" => "log",
-    "/add-food" => "add-food",
-    "/login" => "login",
-    "/logout" => "logout"
-];
 
 if (isset($map[$URI])) {
     $curpage = $map[$URI];
@@ -78,6 +79,12 @@ $SCRIPTS = [];
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mit egyek ma?</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/625577689c.js" crossorigin="anonymous"></script>
+    <style>
+        .link {
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>

@@ -57,6 +57,7 @@ function submit() {
             sideDish: $("#sideDishName").val(),
             dessert: $("#dessertName").val(),
             date: $("#foodDate").val(),
+            mealType: $("#foodMealType").val(),
             foodEntryMode: foodEntryMode || "createIfNeeded"
         },
         success: function(response) {
@@ -83,14 +84,13 @@ function submit() {
     })
 }
 
-
 function loadStoredFoods() {
     $(".dishInput")
         .toArray()
         .map(function(v){return $(v).attr("list")})
         .forEach(function(k) {
             $.ajax({
-                url: "/api/log-food-options.php?field="+k,
+                url: "/api/log-food-options.php?field="+encodeURIComponent(k),
                 success: function(response) {
                     $("#"+k).html(response)
                 }
@@ -114,10 +114,94 @@ function checkFoodExists(selector) {
         $(selector).addClass("is-valid")
     }
 }
+var bsModal;
 
+function openRating(id, type, rating, name) {
+    var modal = $("#rateModal");
+
+    modal.data("course-id", id)
+    modal.data("course-type", type)
+    modal.data("active", true)
+
+    modal.find("#ratedFoodName").text(name);
+    if (rating === false) {
+        modal.find("#foodRating").val(55);
+        $("#zeroRating").prop("checked", false)
+        ratingChange(true);
+    } else {
+        modal.find("#foodRating").val(rating*100);
+        $("#zeroRating").prop("checked", rating == 0)
+        ratingChange()
+    }
+
+    bsModal.show();
+}
+
+function closeRating() {
+    var modal = $("#rateModal");
+
+    modal.data("active", false)
+    modal.data("course-id", undefined)
+    modal.data("course-type", undefined)
+    bsModal.hide()
+}
+
+function saveRating() {
+    var modal = $("#rateModal");
+    if (!modal.data("active")) return;
+
+    $("#generalModalError").hide()
+    $("#modalLoadingSpinner").show()
+    $("#modalSubmitBtn").prop("disabled", true)
+
+    var rating = ratingChange();
+    $.ajax({
+        url: "/api/rate.php",
+        method: "POST",
+        data: {
+            rating,
+            id: modal.data("course-id"),
+            type: modal.data("course-type")
+        },
+        success: function(response) {
+            $("#modalLoadingSpinner").hide()
+            $("#modalSubmitBtn").prop("disabled", false)
+            closeRating()
+            loadTable("#logTable")
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            $("#modalLoadingSpinner").hide()
+            $("#modalSubmitBtn").prop("disabled", false)
+            if (jqXHR.status == 401) {
+                window.location = "/login";
+                return;
+            }
+            $("#generalModalError").show()
+        }
+    })
+
+    
+}
+
+function ratingChange(reset) {
+    if (reset){
+        $("#rateModal .modal-body h2 span").text("-.-");
+        return Number.NaN;
+    } else {
+        var rating;
+        if ($("#zeroRating").prop("checked"))
+            rating = 0;
+        else
+            rating = ($("#foodRating").val() / 10).toFixed(1)
+        $("#rateModal .modal-body h2 span").text(rating);
+        return rating/10;
+    }
+}
 
 $(document).ready(function() {
     $(".dishInput").each(function() {
             $(this).bind("input", checkFoodExists.bind(this, this))
         })
+
+    bsModal = new bootstrap.Modal("#rateModal")
 })

@@ -33,7 +33,7 @@ if (empty($_GET["field"]) || !isset($dish_fields[$_GET["field"]])) {
     die();
 }
 
-$foods = R::find('food', 'deployment_id = ? AND type_id = ?', 
+$foods = R::find('food', 'deployment_id = ? AND foodtype_id = ?', 
     [
         $DEPLOYMENT->id, 
         R::enum("foodtype:".$dish_fields[$_GET["field"]])->id
