@@ -26,7 +26,10 @@ if (!empty($USER) && isset($_SESSION["deployment_id"]) && !empty($_SESSION["depl
     if ($USER->last_deployment_id !== $_SESSION["deployment_id"]) {
         $_SESSION["deployment_id"] = $USER->last_deployment_id;
     }
-    $DEPLOYMENT = R::findOne("deployment", 'id = ?', [$_SESSION["deployment_id"]]);
+    $DEPLOYMENT = R::findOne("deployment", 
+        'deployment.id = ? AND @shared.user.id = ?', 
+        [$_SESSION["deployment_id"], $_SESSION["user_id"]]
+    );
 }
 if ($USER == NULL || $DEPLOYMENT == NULL) {
     session_destroy();
@@ -61,7 +64,7 @@ if (!empty($USER)) {
     $map["/log"] = "log";
     $map["/add-food"] = "add-food";
 
-    $deployments = R::find("deployment", "@shared.user.id = ?", [$USER->id]);
+    $deployments = R::find("deployment", "@shared.user.id = ? ORDER BY `deployment`.`name` ASC", [$USER->id]);
 } else {
     $pageNames["/login"] = "Bejelentkezés";
 }
@@ -106,7 +109,7 @@ $SCRIPTS = [];
                                 <a class="nav-link<?= ($URI == $link) ? " active\" aria-current=\"page" : "" ?>" href="<?= $link ?>"><?= $name ?></a>
                             </li>
                         <?php } ?>
-                        <?php if (!empty($USER) && count($d) > 1) { ?>
+                        <?php if (!empty($USER) && count($deployments) > 1) { ?>
                         <li class="nav-item dropdown ms-sm-auto">
                             <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Háztartás: [<?= $DEPLOYMENT->name ?>]

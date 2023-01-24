@@ -36,7 +36,7 @@ if (empty($_GET["field"]) || !isset($dish_fields[$_GET["field"]])) {
     die();
 }
 
-$foods = R::find('food', 'deployment_id = ? AND foodtype_id = ?', 
+$foods = R::find('food', 'deployment_id = ? AND foodtype_id = ? ORDER BY `food`.`name` ASC', 
     [
         $DEPLOYMENT->id, 
         R::enum("foodtype:".$dish_fields[$_GET["field"]])->id

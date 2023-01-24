@@ -1,5 +1,6 @@
 function submit() {
     $("#loadingSpinner").show()
+    $("#submitBtn").attr("disabled", true)
 
     $(".userInput").removeClass("is-invalid").removeClass("is-valid")
     
@@ -25,6 +26,7 @@ function submit() {
             password: $("#password").val()
         },
         success: function(response) {
+            $("#submitBtn").attr("disabled", false)
             $("#loadingSpinner").hide()
             if (response == "INVALID") {
                 $(".userInput").addClass("is-invalid")
@@ -33,6 +35,7 @@ function submit() {
             window.location = "/";
         },
         error: function(jqXHR, textStatus, errorThrown) {
+            $("#submitBtn").attr("disabled", false)
             $("#loadingSpinner").hide()
         }
     })

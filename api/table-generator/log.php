@@ -1,7 +1,6 @@
 <?php
 require_once($_SERVER["DOCUMENT_ROOT"] . '/classloader.php');
 use \RedBeanPHP\R as R;
-use \RedBeanPHP\Finder as Finder;
 
 $dbcreds = Config::getMySQLCredentials();
 R::setup($dbcreds["conn_str"], $dbcreds["username"], $dbcreds["password"]);

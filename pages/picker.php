@@ -6,10 +6,10 @@ if (!isset($INCLUDED)) {
 use \RedBeanPHP\R as R;
 
 $dish_fields = [0 => "soup", 3 => "dessert"];
-$meals = [];
+$ms = [];
 $mealtype = R::enum("mealtype:lunch");
 foreach($dish_fields as $k => $v) {
-    $meals[$k] = R::findOne('food', 'deployment_id = ? AND foodtype_id = ? AND mealtype_id & ? != 0 ORDER BY RAND() LIMIT 1', 
+    $ms[$k] = R::findOne('food', 'deployment_id = ? AND foodtype_id = ? AND mealtype_id & ? != 0 ORDER BY RAND() LIMIT 1', 
     [$DEPLOYMENT->id, R::enum("foodtype:$v")->id, $mealtype->id]);
 }
 $combo = R::findOne('dishcombo', 
@@ -18,26 +18,58 @@ $combo = R::findOne('dishcombo',
      ORDER BY RAND() LIMIT 1",
     [$DEPLOYMENT->id, $mealtype->id]);
 if ($combo != NULL) {
-    $meals[1] = $combo->fetchAs('food')->main_course;
-    $meals[2] = $combo->fetchAs('food')->side_dish;
+    $ms[1] = $combo->fetchAs('food')->main_course;
+    $ms[2] = $combo->fetchAs('food')->side_dish;
 }
 
-
+$users = R::find('user', '@shared.deployment.id = ? ORDER BY `user`.`name` ASC', [$DEPLOYMENT->id]);
+$SCRIPTS[] = "/js/picker.js"
 
 ?>
 <div class="container-fluid">
-    <div class="">
-        <h2 class="text-center">Mai ajánlat</h2>
-        <table class="table mx-auto" style="width: fit-content;">
-            <tbody>
-                <?php if (!empty($meals[0])) { ?>
-                    <tr><th>Leves:</th><td><?= htmlspecialchars($meals[0]->name) ?></td></tr>
-                <?php } if (!empty($combo)) { ?>
-                    <tr><th>Második:</th><td><?= htmlspecialchars(implode(" + ", array_filter([$meals[1]->name, $meals[2]->name]))) ?></td></tr>
-                <?php } if (!empty($meals[3])) { ?>
-                    <tr><th>Desszert:</th><td><?= htmlspecialchars($meals[3]->name) ?></td></tr>
-                <?php } ?>
-            </tbody>
-        </table>
+    <div class="row g-3 mb-4">
+        <div class="col-sm order-sm-1 order-2">
+            <h5>Kik esznek?</h5>
+            <?php foreach ($users as $u) { ?>
+            <div class="form-check">
+                <input class="form-check-input userSelect" type="checkbox" value="<?= $u["id"] ?>" checked name="userSelect" id="userSelect-<?= $u["id"] ?>">
+                <label class="form-check-label" for="userSelect-<?= $u["id"] ?>">
+                    <?= htmlspecialchars((empty($u["name"])) ? $u["username"] : $u["name"] ); ?>
+                </label>
+            </div>
+            <?php } ?>
+        </div>
+        <div class="col-sm order-sm-2 order-1">
+            <div class="form-floating">
+                <select class="form-select mealSelect" id="mealSelect" placeholder="a">
+                    <option value="breakfast">Reggeli</option>
+                    <option value="lunch" selected>Ebéd</option>
+                    <option value="dinner">Vacsora</option>
+                </select>
+                <label for="mealSelect">Étkezés</label>
+            </div>
+        </div>
     </div>
+    <div class="row col-sm-4 mx-auto">
+        <button type="button" onclick="submit()" id="submitBtn" class="btn btn-primary">
+            Generálás
+        </button>
+    </div>
+    <div class="row" id="loadingSpinner" style="display: none;">
+        <div class="col-1 mt-2 mx-auto">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="failAlert" style="display: none;">
+        <div class="col-md-10 col-11 mt-3 mx-auto alert alert-danger" role="alert">
+            A generátornak valami nem tetszett! <br>
+            Tölts újra az oldalt és próbáld meg mégegyszer!
+        </div>
+    </div>
+    <hr>
+    <table class="table mx-auto" id="mealTable" style="width: fit-content;">
+        
+    </table>
 </div>
