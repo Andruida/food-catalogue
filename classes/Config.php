@@ -11,6 +11,7 @@ class Config {
             "conn_str" => 'mysql:host='.$config["mysql"]["host"].';port='.$config["mysql"]["port"].';dbname='.$config["mysql"]["db"],
             "username" => $config["mysql"]["user"],
             "password" => $config["mysql"]["pw"],
+            "frozen" => ($config["mysql"]["frozen"] == true)
         ];
     }
 }

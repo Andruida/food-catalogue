@@ -18,6 +18,7 @@ use \RedBeanPHP\R as R;
 
 $dbcreds = Config::getMySQLCredentials();
 R::setup($dbcreds["conn_str"], $dbcreds["username"], $dbcreds["password"]);
+R::freeze($dbcreds["frozen"]);
 unset($dbcreds);
 
 $user = R::findOne('user', 'username = ?', [$_POST["username"]]);
