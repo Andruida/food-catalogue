@@ -25,6 +25,10 @@ function submit() {
         error: function(jqXHR, textStatus, errorThrown) {
             $("#submitBtn").attr("disabled", false)
             $("#loadingSpinner").hide()
+            if (jqXHR.status == 401) {
+                window.location = "/login";
+                return;
+            }
         }
     })
 }

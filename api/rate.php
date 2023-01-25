@@ -71,14 +71,14 @@ if ($toBeRated == null) {
 
 $ratingBean = null;
 if ($type == 'food') {
-    $ratingBean = R::find('rating', 
+    $ratingBean = R::findForUpdate('rating', 
         "user_id = ? AND food_id = ? AND dishcombo_id IS NULL LIMIT 1",
-        [$USER->id, $toBeRated->id], "FOR UPDATE"
+        [$USER->id, $toBeRated->id]
     );
 } else {
-    $ratingBean = R::find('rating', 
+    $ratingBean = R::findForUpdate('rating', 
         "user_id = ? AND food_id IS NULL AND dishcombo_id = ? LIMIT 1",
-        [$USER->id, $toBeRated->id], "FOR UPDATE"
+        [$USER->id, $toBeRated->id]
     );
 }
 

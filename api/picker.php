@@ -84,7 +84,12 @@ $courses["dishcombo"] = R::getRow(
         d.id as dishcombo_id,
         f1.id as main_course_id, f1.name as main_course_name,
         f2.id as side_dish_id, f2.name as side_dish_name,
-        IFNULL(DATEDIFF(NOW(), GREATEST(MAX(l1.date), MAX(l2.date)) ), 100) * 
+        IFNULL(DATEDIFF(NOW(), 
+            GREATEST(
+                IFNULL(MAX(l1.date), 0), 
+                IFNULL(MAX(l2.date), 0)
+            )
+        ), 100) * 
         IFNULL(EXP( SUM( LOG( r.rating ) ) / COUNT( r.rating ) ), 1) *
         (RAND() * ($RANDOM_MAX - $RANDOM_MIN) + $RANDOM_MIN) as score
     FROM `dishcombo` d
@@ -138,19 +143,19 @@ $courses["dessert"] = R::getRow(
         <tr>
             <th>Leves:</th>
             <td><?= htmlspecialchars($courses["soup"]["name"]) ?></td>
-            <td><?= round($courses["soup"]["score"], 2) ?></td>
+            <!-- <td><?= round($courses["soup"]["score"], 2) ?></td> -->
         </tr>
     <?php } if (!empty($courses["dishcombo"])) { ?>
         <tr>
             <th>Második:</th>
             <td><?= htmlspecialchars(implode(" + ", array_filter([$courses["dishcombo"]["main_course_name"], $courses["dishcombo"]["side_dish_name"]]))) ?></td>
-            <td><?= round($courses["dishcombo"]["score"], 2) ?></td>
+            <!-- <td><?= round($courses["dishcombo"]["score"], 2) ?></td> -->
         </tr>
     <?php } if (!empty($courses["dessert"])) { ?>
         <tr>
             <th>Desszert:</th>
             <td><?= htmlspecialchars($courses["dessert"]["name"]) ?></td>
-            <td><?= round($courses["dessert"]["score"], 2) ?></td>
+            <!-- <td><?= round($courses["dessert"]["score"], 2) ?></td> -->
         </tr>
     <?php } ?>
 </tbody>

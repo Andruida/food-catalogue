@@ -37,6 +37,17 @@ function submit() {
         error: function(jqXHR, textStatus, errorThrown) {
             $("#submitBtn").attr("disabled", false)
             $("#loadingSpinner").hide()
+            console.log("login failed for some reason");
         }
     })
 }
+
+
+$(document).ready(function() {
+$('.userInput').keypress(function (e) {
+    if (e.which == 13) {
+      submit();
+      return false;
+    }
+  });
+})

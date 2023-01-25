@@ -9,6 +9,8 @@ if (!empty($USER)) {
     ob_end_clean();
     die();
 }
+
+$SCRIPTS[] = "/js/login.js";
 ?>
 <div class="container-fluid">
     <h4>Bejelentkezés</h4>
@@ -39,4 +41,3 @@ if (!empty($USER)) {
         </div>
     </div>
 </div>
-<script src="/js/login.js"></script>

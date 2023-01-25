@@ -21,6 +21,10 @@ function loadTable(selector) {
         },
         error: function(jqXHR, textStatus, errorThrown) {
             $(selector).parent().find(".tableLoadingSpinner").remove()
+            if (jqXHR.status == 401) {
+                window.location = "/login";
+                return;
+            }
         }
     })
 }

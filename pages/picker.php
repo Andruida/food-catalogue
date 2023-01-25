@@ -55,13 +55,6 @@ $SCRIPTS[] = "/js/picker.js"
             Generálás
         </button>
     </div>
-    <div class="row" id="loadingSpinner" style="display: none;">
-        <div class="col-1 mt-2 mx-auto">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
-    </div>
     <div class="row" id="failAlert" style="display: none;">
         <div class="col-md-10 col-11 mt-3 mx-auto alert alert-danger" role="alert">
             A generátornak valami nem tetszett! <br>
@@ -72,4 +65,11 @@ $SCRIPTS[] = "/js/picker.js"
     <table class="table mx-auto" id="mealTable" style="width: fit-content;">
         
     </table>
+    <div class="row" id="loadingSpinner" style="display: none;">
+        <div class="col-1 mt-2 mx-auto">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
 </div>

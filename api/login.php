@@ -29,7 +29,23 @@ if ($user == NULL) {
 
 if (password_verify($_POST["password"], $user->password)) {
     $_SESSION["user_id"] = $user->id;
-    $_SESSION["deployment_id"] = $user->last_deployment_id;
+    $count = R::count("deployment", 
+        "@shared.user.id = ? AND deployment.id = ?", 
+        [$user->id, $user->last_deployment_id]
+    );
+    if ($count > 0) {
+        $_SESSION["deployment_id"] = $user->last_deployment_id;
+    } else {
+        $d = R::findOne("deployment", "@shared.user.id = ?",
+            [$user->id]
+        );
+        if ($d == null) {
+            die("INVALID");
+        }
+        $_SESSION["deployment_id"] = $d->id;
+        $user->last_deployment_id = $d->id;
+        R::store($user);
+    }
 } else {
     R::close();
     die("INVALID");

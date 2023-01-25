@@ -57,14 +57,16 @@ $deployments = [];
 
 if (!empty($USER)) {
     $pageNames["/log"] = "Napló";
-    $pageNames["/logout"] = "Kijelentkezés";
 
     $curpage = "picker";
     $map["/"] = "picker";
     $map["/log"] = "log";
     $map["/add-food"] = "add-food";
 
-    $deployments = R::find("deployment", "@shared.user.id = ? ORDER BY `deployment`.`name` ASC", [$USER->id]);
+    $deployments = R::find("deployment", 
+        "@shared.user.id = ? AND deployment.id != ? ORDER BY `deployment`.`name` ASC", 
+        [$USER->id, $DEPLOYMENT->id]
+    );
 } else {
     $pageNames["/login"] = "Bejelentkezés";
 }
@@ -96,29 +98,33 @@ $SCRIPTS = [];
 
 <body>
     <div class="container">
-        <nav class="navbar navbar-expand-sm bg-light mt-2">
+        <nav class="navbar navbar-expand-md bg-light mt-2">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/">Mit egyek ma?</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav mb-2 mb-sm-0">
+                    <ul class="navbar-nav mb-2 mb-md-0 w-100">
                         <?php foreach ($pageNames as $link => $name) { ?>
                             <li class="nav-item">
                                 <a class="nav-link<?= ($URI == $link) ? " active\" aria-current=\"page" : "" ?>" href="<?= $link ?>"><?= $name ?></a>
                             </li>
                         <?php } ?>
-                        <?php if (!empty($USER) && count($deployments) > 1) { ?>
-                        <li class="nav-item dropdown ms-sm-auto">
+                        <?php if (!empty($USER)) { ?>
+                        <li class="nav-item dropdown ms-md-auto">
                             <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Háztartás: [<?= $DEPLOYMENT->name ?>]
+                                Háztartás: [<?= htmlspecialchars($DEPLOYMENT->name) ?>]
                             </a>
                             <ul class="dropdown-menu">
+                                <?php if (count($deployments) > 0) { ?>
                                 <?php foreach ($deployments as $d) { ?>
-                                <li><a class="dropdown-item link" onclick="changeDeployment(<?= $d->id ?>)"><?= $d->name ?></a></li>
-                                <?php } ?>
+                                <li><a class="dropdown-item link" onclick="changeDeployment(<?= $d->id ?>)"><?= htmlspecialchars($d->name) ?></a></li>
+                                <?php }} ?>
                             </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link<?= ($URI == "/logout") ? " active\" aria-current=\"page" : "" ?>" href="/logout">Kijelentkezés</a>
                         </li>
                         <?php } ?>
                     </ul>
