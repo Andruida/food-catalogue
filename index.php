@@ -62,6 +62,8 @@ if (!empty($USER)) {
     $map["/"] = "picker";
     $map["/log"] = "log";
     $map["/add-food"] = "add-food";
+    $map["/settings"] = "settings";
+    $map["/profile"] = "profile";
 
     $deployments = R::find("deployment", 
         "@shared.user.id = ? AND deployment.id != ? ORDER BY `deployment`.`name` ASC", 
@@ -117,11 +119,19 @@ $SCRIPTS = [];
                                 Háztartás: [<?= htmlspecialchars($DEPLOYMENT->name) ?>]
                             </a>
                             <ul class="dropdown-menu">
+                                <li><a href="/settings" 
+                                    class="dropdown-item<?= ($URI == "/settings") ? " active\" aria-current=\"page" : "" ?>" >
+                                    Beállítások
+                                </a></li>
                                 <?php if (count($deployments) > 0) { ?>
+                                <li><hr></li>
                                 <?php foreach ($deployments as $d) { ?>
                                 <li><a class="dropdown-item link" onclick="changeDeployment(<?= $d->id ?>)"><?= htmlspecialchars($d->name) ?></a></li>
                                 <?php }} ?>
                             </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link<?= ($URI == "/profile") ? " active\" aria-current=\"page" : "" ?>" href="/profile">[<?= htmlspecialchars($USER->name ?? $USER->username)?>]</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link<?= ($URI == "/logout") ? " active\" aria-current=\"page" : "" ?>" href="/logout">Kijelentkezés</a>
