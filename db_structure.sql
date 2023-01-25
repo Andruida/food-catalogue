@@ -10,7 +10,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `deployment` (
   `id` int(11) UNSIGNED NOT NULL,
-  `name` varchar(191) DEFAULT NULL
+  `name` varchar(191) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 CREATE TABLE `deployment_user` (
@@ -21,16 +21,16 @@ CREATE TABLE `deployment_user` (
 
 CREATE TABLE `dishcombo` (
   `id` int(11) UNSIGNED NOT NULL,
-  `main_course_id` int(11) UNSIGNED DEFAULT NULL,
+  `main_course_id` int(11) UNSIGNED NOT NULL,
   `side_dish_id` int(11) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 CREATE TABLE `food` (
   `id` int(11) UNSIGNED NOT NULL,
-  `name` varchar(191) DEFAULT NULL,
-  `foodtype_id` int(11) UNSIGNED DEFAULT NULL,
-  `deployment_id` int(11) UNSIGNED DEFAULT NULL,
-  `mealtype_id` int(11) UNSIGNED DEFAULT NULL
+  `name` varchar(191) NOT NULL,
+  `foodtype_id` int(11) UNSIGNED NOT NULL,
+  `deployment_id` int(11) UNSIGNED NOT NULL,
+  `mealtype_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 CREATE TABLE `foodtype` (
@@ -47,11 +47,11 @@ INSERT INTO `foodtype` (`id`, `name`) VALUES
 
 CREATE TABLE `log` (
   `id` int(11) UNSIGNED NOT NULL,
-  `date` date DEFAULT NULL,
+  `date` date NOT NULL,
   `soup_id` int(11) UNSIGNED DEFAULT NULL,
   `dishcombo_id` int(11) UNSIGNED DEFAULT NULL,
   `dessert_id` int(11) UNSIGNED DEFAULT NULL,
-  `mealtype_id` int(11) UNSIGNED DEFAULT NULL
+  `mealtype_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 CREATE TABLE `mealtype` (
@@ -72,15 +72,15 @@ CREATE TABLE `rating` (
   `id` int(11) UNSIGNED NOT NULL,
   `food_id` int(11) UNSIGNED DEFAULT NULL,
   `dishcombo_id` int(11) UNSIGNED DEFAULT NULL,
-  `rating` decimal(10,2) DEFAULT NULL,
-  `user_id` int(11) UNSIGNED DEFAULT NULL
+  `rating` decimal(10,2) NOT NULL,
+  `user_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 CREATE TABLE `user` (
   `id` int(11) UNSIGNED NOT NULL,
-  `username` varchar(191) DEFAULT NULL,
+  `username` varchar(191) NOT NULL,
   `name` varchar(191) DEFAULT NULL,
-  `password` varchar(191) DEFAULT NULL,
+  `password` varchar(191) NOT NULL,
   `last_deployment_id` int(11) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 

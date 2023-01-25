@@ -61,22 +61,23 @@ $courses = [];
 $courses["soup"] = R::getRow(
     "SELECT f.id, f.name,
         IFNULL(DATEDIFF(NOW(), MAX(l.date)), 100) * 
-        IFNULL(EXP( SUM( LOG( r.rating ) ) / COUNT( r.rating ) ), 1) *
+        IFNULL(EXP( SUM( 
+            IF(r.rating != 0, LOG( r.rating ), -10e10) 
+        ) / COUNT( r.rating ) ), 1) *
         (RAND() * ($RANDOM_MAX - $RANDOM_MIN) + $RANDOM_MIN) as score
     FROM `food` f
     LEFT JOIN log l ON f.id = l.soup_id
-    LEFT JOIN rating r ON f.id = r.food_id
+    LEFT JOIN rating r ON (f.id = r.food_id AND r.user_id IN (".R::genSlots($userIDList)."))
     WHERE 
         f.deployment_id = ? AND 
         f.mealtype_id & ? != 0 AND 
-        f.foodtype_id = ? AND 
-        (r.user_id IS NULL OR r.user_id IN (".R::genSlots($userIDList)."))
+        f.foodtype_id = ?
     GROUP BY f.id, f.name ORDER BY `score` DESC LIMIT 1;",
-    array_merge([
+    array_merge($userIDList, [
         $DEPLOYMENT->id, 
         R::enum("mealtype:".$_GET["mealType"])->id,
         R::enum("foodtype:soup")->id
-    ], $userIDList)
+    ])
 );
 
 $courses["dishcombo"] = R::getRow(
@@ -90,7 +91,9 @@ $courses["dishcombo"] = R::getRow(
                 IFNULL(MAX(l2.date), 0)
             )
         ), 100) * 
-        IFNULL(EXP( SUM( LOG( r.rating ) ) / COUNT( r.rating ) ), 1) *
+        IFNULL(EXP( SUM( 
+            IF(r.rating != 0, LOG( r.rating ), -10e10) 
+        ) / COUNT( r.rating ) ), 1) *
         (RAND() * ($RANDOM_MAX - $RANDOM_MIN) + $RANDOM_MIN) as score
     FROM `dishcombo` d
     LEFT JOIN dishcombo d1 ON d.main_course_id = d1.main_course_id
@@ -99,37 +102,37 @@ $courses["dishcombo"] = R::getRow(
     LEFT JOIN log l2 ON d2.id = l2.dishcombo_id
     LEFT JOIN food f1 ON d.main_course_id = f1.id
     LEFT JOIN food f2 ON d.side_dish_id = f2.id
-    LEFT JOIN rating r ON d.id = r.dishcombo_id
+    LEFT JOIN rating r ON (d.id = r.dishcombo_id AND r.user_id IN (".R::genSlots($userIDList)."))
     WHERE 
         f1.deployment_id = ? AND 
-        f1.mealtype_id & ? != 0 AND 
-        (r.user_id IS NULL OR r.user_id IN (".R::genSlots($userIDList)."))
+        f1.mealtype_id & ? != 0
     GROUP BY d.id, f1.id, f2.id, f1.name, f2.name ORDER BY `score` DESC LIMIT 1;",
-    array_merge([
+    array_merge($userIDList, [
         $DEPLOYMENT->id, 
         R::enum("mealtype:".$_GET["mealType"])->id
-    ], $userIDList)
+    ])
 );
 
 $courses["dessert"] = R::getRow(
     "SELECT f.id, f.name,
         IFNULL(DATEDIFF(NOW(), MAX(l.date)), 100) * 
-        IFNULL(EXP( SUM( LOG( r.rating ) ) / COUNT( r.rating ) ), 1) *
+        IFNULL(EXP( SUM( 
+            IF(r.rating != 0, LOG( r.rating ), -10e10) 
+        ) / COUNT( r.rating ) ), 1) *
         (RAND() * ($RANDOM_MAX - $RANDOM_MIN) + $RANDOM_MIN) as score
     FROM `food` f
     LEFT JOIN log l ON f.id = l.dessert_id
-    LEFT JOIN rating r ON f.id = r.food_id
+    LEFT JOIN rating r ON (f.id = r.food_id AND r.user_id IN (".R::genSlots($userIDList)."))
     WHERE 
         f.deployment_id = ? AND 
         f.mealtype_id & ? != 0 AND 
-        f.foodtype_id = ? AND 
-        (r.user_id IS NULL OR r.user_id IN (".R::genSlots($userIDList)."))
+        f.foodtype_id = ?
     GROUP BY f.id, f.name ORDER BY `score` DESC LIMIT 1;",
-    array_merge([
+    array_merge($userIDList, [
         $DEPLOYMENT->id, 
         R::enum("mealtype:".$_GET["mealType"])->id,
         R::enum("foodtype:dessert")->id
-    ], $userIDList)
+    ])
 );
 
 // var_dump($courses);
